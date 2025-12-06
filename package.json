@@ -1,0 +1,18 @@
+{
+  "name": "tastytrade-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for Tastytrade API with Azure Functions",
+  "scripts": {
+    "inspector": "pwsh -File run-inspector.ps1"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.1.0"
+  },
+  "keywords": [
+    "mcp",
+    "tastytrade",
+    "azure-functions"
+  ],
+  "author": "",
+  "license": "MIT"
+}
