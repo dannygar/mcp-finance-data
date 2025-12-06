@@ -39,7 +39,7 @@ uv sync
 ```pwsh
 # Start Azurite (if not already running)
 docker run -d -p 10000:10000 -p 10001:10001 -p 10002:10002 `
-    --name tastytrade-azurite `
+    --name finance-azurite `
     mcr.microsoft.com/azure-storage/azurite
 
 # Sync dependencies (from root)
@@ -80,7 +80,7 @@ If you prefer manual control:
 ```pwsh
 # 1. Start Azurite (if not already running)
 docker run -d -p 10000:10000 -p 10001:10001 -p 10002:10002 `
-    --name tastytrade-azurite `
+    --name finance-azurite `
     mcr.microsoft.com/azure-storage/azurite
 
 # 2. Sync dependencies (from root)
@@ -134,7 +134,7 @@ yarn inspector
 
 The inspector opens a web UI at `http://localhost:5173` where you can:
 
-- Browse available tools (`check_tastytrade_account`, `get_market_snapshot`, `get_transactions`, `get_total_fees`)
+- Browse available tools (`get_company_revenue`, `get_company_free_cash_flow`)
 - Test tool invocations with custom parameters
 - View request/response payloads in real-time
 - Debug errors and validate tool outputs

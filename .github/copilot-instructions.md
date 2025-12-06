@@ -57,24 +57,7 @@ Tip: The MCP server automatically detects Azure environment and switches to `.en
   - Compute `project_root` from the file location
   - Build `env_path = os.path.join(project_root, 'config', '.env.prod')` (or `.env.dev`)
   - `load_dotenv(dotenv_path=env_path)`
-- `src/test.py` writes a `remember-token` to `sessions/session_token.txt`; treat it as sensitive.
-
-Accounts: assume a single Tastytrade account. If needed, store the account number in `ACCOUNT_NUMBER` in your `.env.*`. You can discover it once via `/customers/me/accounts` using `tasty.api.get`.
-
-## SDK and API usage patterns
-- Preferred library: `tastytrade_sdk` (see `requirements.txt`).
-  - Login: `tasty = Tastytrade().login(login=username, password=password)`
-  - Market data subscription: `tasty.market_data.subscribe(symbols=[...], on_quote=..., on_candle=..., on_greeks=...)`; call `subscription.open()` and later `subscription.close()`.
-  - Direct REST calls for gaps: `tasty.api.get('/path', params=...)`.
-    - For endpoints requiring repeated params (e.g., `symbol[]`, `account-number[]`), pass a list of tuples: `[('symbol[]', 'SPX'), ('symbol[]', 'VIX')]`.
-- Sandbox vs prod:
-  - SDK default base URL is prod (`api.tastytrade.com`).
-  - Use sandbox/cert by constructing `Tastytrade(api_base_url='api.cert.tastyworks.com')`.
-  - `src/test.py` demonstrates direct `requests` calls to cert endpoints without the SDK (historical/diagnostic use).
-  
-  Docs:
-  - SDK (GitHub): https://github.com/tastytrade/tastytrade-sdk-python
-  - API reference: https://tastytrade.github.io/tastytrade-sdk-python/tastytrade_sdk.html
+- API keys are stored in `config/.env.dev` (local) and `config/.env.prod` (Azure deployment).
 
 ## Project conventions to follow
 - Always load `.env` via an explicit path under `config/`; do not rely on implicit `.env` in CWD.
@@ -85,9 +68,8 @@ Accounts: assume a single Tastytrade account. If needed, store the account numbe
 ## Typical task templates (examples)
 - Add a new script under `src/`:
   1) Load env from `config/.env.prod` (or `.env.dev`)
-  2) Login with `Tastytrade().login(...)`
-  3) Make API calls with try-except error handling
-  4) Return JSON response using `json.dumps()`
+  2) Make API calls with try-except error handling
+  3) Return JSON response using `json.dumps()`
 - Example: Adding a new market data tool:
   - Define tool properties: `ToolProperty("symbol", "string", "Ticker symbol")`
   - Add trigger: `@app.generic_trigger(arg_name="context", type="mcpToolTrigger", toolName="get_data", ...)`

@@ -1,7 +1,7 @@
 {
-  "name": "tastytrade-mcp-server",
+  "name": "mcp-finance-data",
   "version": "1.0.0",
-  "description": "MCP Server for Tastytrade API with Azure Functions",
+  "description": "MCP Server for company earnings data with Azure Functions",
   "scripts": {
     "inspector": "pwsh -File run-inspector.ps1"
   },
@@ -10,7 +10,7 @@
   },
   "keywords": [
     "mcp",
-    "tastytrade",
+    "finance",
     "azure-functions"
   ],
   "author": "",

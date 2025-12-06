@@ -234,7 +234,7 @@ echo "MCP Endpoint: $mcpEndpoint"
 2. Go to **Agent** → **Tools** → **MCP Servers**
 3. Click **Add MCP Server**
 4. Configure:
-   - **Name**: `tastytrade-mcp`
+   - **Name**: `finance-data-mcp`
    - **Transport Type**: HTTP (Server-Sent Events)
    - **Endpoint URL**: `https://<your-function-app>.azurewebsites.net/runtime/webhooks/mcp/sse`
    - **Authentication**: Microsoft Entra ID
@@ -255,7 +255,7 @@ project_client = AIProjectClient.from_connection_string(
 
 # Add MCP server connection
 mcp_config = {
-    "name": "tastytrade-mcp",
+    "name": "finance-data-mcp",
     "transport_type": "sse",
     "endpoint": "https://<your-function-app>.azurewebsites.net/runtime/webhooks/mcp/sse",
     "authentication": {
@@ -270,29 +270,28 @@ mcp_config = {
 
 ## Step 5: Configure Environment Variables in Function App
 
-Your Tastytrade credentials need to be in the Function App:
+Your API keys need to be in the Function App:
 
 ```pwsh
-# Set credentials as app settings (secure)
+# Set API key as app setting (secure)
 az functionapp config appsettings set `
   --name $functionAppName `
   --resource-group $resourceGroup `
-  --settings "ACCOUNT=<your-tastytrade-username>" "PASSWORD=<your-tastytrade-password>"
+  --settings "ALPHAVANTAGE_API_KEY=<your-api-key>"
 ```
 
 **Better: Use Azure Key Vault (Recommended)**
 
 ```pwsh
 # Create Key Vault
-$keyVaultName = "kv-tastytrade-$((Get-Random -Maximum 9999).ToString('0000'))"
+$keyVaultName = "kv-finance-$((Get-Random -Maximum 9999).ToString('0000'))"
 az keyvault create `
   --name $keyVaultName `
   --resource-group $resourceGroup `
   --location $AZURE_LOCATION
 
 # Store secrets
-az keyvault secret set --vault-name $keyVaultName --name "TASTYTRADE-ACCOUNT" --value "<your-username>"
-az keyvault secret set --vault-name $keyVaultName --name "TASTYTRADE-PASSWORD" --value "<your-password>"
+az keyvault secret set --vault-name $keyVaultName --name "ALPHAVANTAGE-API-KEY" --value "<your-api-key>"
 
 # Get managed identity of function app
 $functionIdentity = az functionapp identity show `
@@ -307,13 +306,12 @@ az keyvault set-policy `
   --secret-permissions get list
 
 # Update function app to use Key Vault references
-$accountRef = "@Microsoft.KeyVault(SecretUri=https://$keyVaultName.vault.azure.net/secrets/TASTYTRADE-ACCOUNT/)"
-$passwordRef = "@Microsoft.KeyVault(SecretUri=https://$keyVaultName.vault.azure.net/secrets/TASTYTRADE-PASSWORD/)"
+$apiKeyRef = "@Microsoft.KeyVault(SecretUri=https://$keyVaultName.vault.azure.net/secrets/ALPHAVANTAGE-API-KEY/)"
 
 az functionapp config appsettings set `
   --name $functionAppName `
   --resource-group $resourceGroup `
-  --settings "ACCOUNT=$accountRef" "PASSWORD=$passwordRef"
+  --settings "ALPHAVANTAGE_API_KEY=$apiKeyRef"
 ```
 
 ## Step 6: Test the Connection
