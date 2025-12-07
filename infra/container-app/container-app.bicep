@@ -3,6 +3,8 @@ param location string = resourceGroup().location
 param tags object = {}
 param containerAppsEnvironmentId string
 param containerRegistryName string
+
+@secure()
 param applicationInsightsConnectionString string = ''
 
 @secure()

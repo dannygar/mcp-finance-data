@@ -1,7 +1,0 @@
-# NOTE: This file is for Azure Functions deployment only (required by azd).
-# For local development, use: uv sync (from project root)
-# Dependencies are managed in pyproject.toml at the root.
-
-azure-functions
-requests
-python-dotenv

@@ -2,9 +2,9 @@
 # Launch MCP Inspector with proper Windows environment variable handling
 
 param(
-    [string]$Url = "http://localhost:7071/runtime/webhooks/mcp/sse",
+    [string]$Url = "http://localhost:3000/mcp",
     [int]$ClientPort = 5173,
-    [int]$ServerPort = 3000
+    [int]$ServerPort = 3001
 )
 
 Write-Host "Starting MCP Inspector for: $Url" -ForegroundColor Cyan
