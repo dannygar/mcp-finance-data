@@ -57,15 +57,15 @@ module apiUserAssignedIdentity 'br/public:avm/res/managed-identity/user-assigned
   }
 }
 
-// Create an App Service Plan to group applications under the same payment plan and SKU
+// Create an App Service Plan with Premium P1v3 tier for Function App
 module appServicePlan 'br/public:avm/res/web/serverfarm:0.1.1' = {
   name: 'appserviceplan'
   scope: rg
   params: {
     name: !empty(appServicePlanName) ? appServicePlanName : '${abbrs.webServerFarms}${resourceToken}'
     sku: {
-      name: 'FC1'
-      tier: 'FlexConsumption'
+      name: 'P1v3'
+      tier: 'PremiumV3'
     }
     reserved: true
     location: location
@@ -73,7 +73,7 @@ module appServicePlan 'br/public:avm/res/web/serverfarm:0.1.1' = {
   }
 }
 
-module api './app/api.bicep' = {
+module api './app/api-premium.bicep' = {
   name: 'api'
   scope: rg
   params: {
@@ -85,21 +85,16 @@ module api './app/api.bicep' = {
     runtimeName: 'python'
     runtimeVersion: '3.12'
     storageAccountName: storage.outputs.name
-    deploymentStorageContainerName: deploymentStorageContainerName
-    instanceMemoryMB: 2048
-    maximumInstanceCount: 100
-    enableBlob: storageEndpointConfig.enableBlob
-    enableQueue: storageEndpointConfig.enableQueue
-    enableTable: storageEndpointConfig.enableTable
     identityId: apiUserAssignedIdentity.outputs.resourceId
     identityClientId: apiUserAssignedIdentity.outputs.clientId
     virtualNetworkSubnetId: vnetEnabled ? serviceVirtualNetwork.outputs.appSubnetID : ''
+    enableBlob: storageEndpointConfig.enableBlob
+    enableQueue: storageEndpointConfig.enableQueue
+    enableTable: storageEndpointConfig.enableTable
+    enableFile: storageEndpointConfig.enableFiles
     appSettings: !empty(alphaVantageApiKey) ? {
       ALPHAVANTAGE_API_KEY: alphaVantageApiKey
-      // WEBSITE_AUTH_PRM_DEFAULT_WITH_SCOPES will be set by scripts/setup-auth.ps1
-    } : {
-      // WEBSITE_AUTH_PRM_DEFAULT_WITH_SCOPES will be set by scripts/setup-auth.ps1
-    }
+    } : {}
   }
 }
 
@@ -110,7 +105,7 @@ module storage 'br/public:avm/res/storage/storage-account:0.8.3' = {
   params: {
     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
     allowBlobPublicAccess: false
-    allowSharedKeyAccess: false // Disable local authentication methods as per policy
+    allowSharedKeyAccess: false // Using Managed Identity for storage access
     dnsEndpointType: 'Standard'
     publicNetworkAccess: vnetEnabled ? 'Disabled' : 'Enabled'
     networkAcls: vnetEnabled ? {
@@ -123,6 +118,9 @@ module storage 'br/public:avm/res/storage/storage-account:0.8.3' = {
     blobServices: {
       containers: [{name: deploymentStorageContainerName}]
     }
+    fileServices: {
+      shares: [{name: 'function-content'}]
+    }
     minimumTlsVersion: 'TLS1_2'  // Enforcing TLS 1.2 for better security
     location: location
     tags: tags
@@ -134,7 +132,7 @@ var storageEndpointConfig = {
   enableBlob: true  // Required for AzureWebJobsStorage, .zip deployment, Event Hubs trigger and Timer trigger checkpointing
   enableQueue: true  // Required for Durable Functions and MCP trigger
   enableTable: false  // Required for Durable Functions and OpenAI triggers and bindings
-  enableFiles: false   // Not required, used in legacy scenarios
+  enableFiles: true   // Required for Premium/Standard plans for file shares
   allowUserIdentityPrincipal: true   // Allow interactive user identity to access for testing and debugging
 }
 

@@ -10,9 +10,9 @@ infra:
 
 services:
   mcp-server:
-    project: container-app
+    project: ./container-app
     language: python
     host: containerapp
     docker:
-      path: Dockerfile
-      context: .
+      path: ./container-app/Dockerfile
+      context: ./container-app
