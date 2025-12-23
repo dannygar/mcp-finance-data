@@ -86,7 +86,7 @@ $acrName = azd env get-values | Select-String 'AZURE_CONTAINER_REGISTRY_NAME="([
 
 # Build and push using ACR
 az acr build --registry $acrName --image mcp-finance-server:latest `
-  --file container-app/Dockerfile container-app/
+  --file mcp-server/Dockerfile mcp-server/
 ```
 
 ### 4. Verify Deployment
@@ -300,7 +300,7 @@ azd up
 ```pwsh
 # Build new image
 az acr build --registry <acr-name> --image mcp-finance-server:v2 `
-  --file container-app/Dockerfile container-app/
+  --file mcp-server/Dockerfile mcp-server/
 
 # Update container app
 az containerapp update --name <app> --resource-group <rg> `

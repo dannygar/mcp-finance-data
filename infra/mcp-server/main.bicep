@@ -84,7 +84,7 @@ module containerAppsEnvironment 'br/public:avm/res/app/managed-environment:0.4.5
 }
 
 // Container App for MCP Server
-module containerApp 'container-app.bicep' = {
+module containerApp 'mcp-server.bicep' = {
   name: 'containerApp'
   scope: rg
   params: {

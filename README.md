@@ -31,11 +31,11 @@ uv sync
 
 ### Local Development
 
-**Option 1: Run the Container App locally with Docker**
+**Option 1: Run the MCP Server locally with Docker**
 
 ```pwsh
 # Build the container
-docker build -t mcp-finance-server -f container-app/Dockerfile container-app/
+docker build -t mcp-finance-server -f mcp-server/Dockerfile mcp-server/
 
 # Run with your API key
 docker run -p 3000:3000 -e ALPHAVANTAGE_API_KEY="your_key" mcp-finance-server
@@ -46,7 +46,7 @@ docker run -p 3000:3000 -e ALPHAVANTAGE_API_KEY="your_key" mcp-finance-server
 **Option 2: Run directly with Python**
 
 ```pwsh
-cd container-app
+cd mcp-server
 
 # Set your API key
 $env:ALPHAVANTAGE_API_KEY = "your_key"
@@ -227,15 +227,15 @@ Get free cash flow in USD millions for a company's quarterly earnings report.
 ## Project Structure
 
 ```
-├── container-app/
+├── mcp-server/
 │   ├── server.py              # MCP server (FastMCP + Streamable HTTP)
 │   ├── Dockerfile             # Container image definition
 │   ├── requirements.txt       # Python dependencies
 │   └── pyproject.toml         # Project metadata
 ├── infra/
-│   └── container-app/
+│   └── mcp-server/
 │       ├── main.bicep         # Azure infrastructure
-│       └── container-app.bicep # Container App definition
+│       └── mcp-server.bicep   # MCP Server Container App definition
 ├── config/
 │   ├── .env.prod              # Production API keys
 │   └── .env.dev               # Development API keys
@@ -288,7 +288,7 @@ azd monitor --logs
 
 ### Local Debugging
 
-1. Start the server: `cd container-app && uv run python server.py`
+1. Start the server: `cd mcp-server && uv run python server.py`
 2. Set breakpoints in `server.py`
 3. Attach debugger (VS Code: Python: Attach to Local Process)
 
